@@ -11,7 +11,8 @@ import { Timer } from './src/timer.js';
 import { isHirakana,convertKana } from './src/japanese.js';
 import ObjectToFormData from './src/object-formdata.js';
 import CachedFetch from './src/cached-fetch.js';
-import { fetchJson,fetchText,fetchBlob } from './src/fetch-utils.js'
+import { fetchJson,fetchText,fetchBlob } from './src/fetch-utils.js';
+import { b64encode,b64decode } from './src/base64-codec.js';
 
 Object.assign(typeof(jQuery) === 'undefined' ? globalThis : jQuery,{
   getCookie,getCookies,setCookie,setCookies,
@@ -22,4 +23,5 @@ Object.assign(typeof(jQuery) === 'undefined' ? globalThis : jQuery,{
   ObjectToFormData,
   CachedFetch,
   fetchJson,fetchText,fetchBlob,
+  b64encode,b64decode
 });
