@@ -30,7 +30,7 @@ export default function(params,defaultName = 'param')
     {
       const n = Type.isString(defaultName) && defaultName.length > 0 ? defaultName : 'param';
       const fd = new FormData;
-      params.forEach(v => _value_to(fd,n,v))
+      _value_to(fd,n,params);
 
       return fd;
     }
