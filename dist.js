@@ -23,9 +23,9 @@ Object.assign(typeof(jQuery) === 'undefined' ? globalThis : jQuery,{
   Storage,StorageEx,Session,SessionEx,
   Timer,
   isHirakana,convertKana,
-  ObjectToFormData,
+  objectToFormData,
   CachedFetch,
   fetchJson,fetchText,fetchBlob,
   b64encode,b64decode,
-  TableToArray
+  tableToArray
 });
