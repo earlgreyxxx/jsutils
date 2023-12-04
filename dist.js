@@ -16,6 +16,7 @@ import { fetchJson,fetchText,fetchBlob } from './src/fetch-utils.js';
 import { b64encode,b64decode } from './src/base64-codec.js';
 import tableToArray from './src/table-toarray.js';
 import resize from './src/resize-image.js';
+import { sprintf,vsprintf } from './src/sprintf.js';
 
 Object.assign(typeof(jQuery) === 'undefined' ? globalThis : jQuery,{
   Type,
@@ -30,4 +31,5 @@ Object.assign(typeof(jQuery) === 'undefined' ? globalThis : jQuery,{
   b64encode,b64decode,
   tableToArray,
   resize,
+  sprintf,vsprintf,
 });
