@@ -15,6 +15,7 @@ import CachedFetch from './src/cached-fetch.js';
 import { fetchJson,fetchText,fetchBlob } from './src/fetch-utils.js';
 import { b64encode,b64decode } from './src/base64-codec.js';
 import tableToArray from './src/table-toarray.js';
+import rowsToTable from './src/rows-totable.js';
 import resize from './src/resize-image.js';
 import { sprintf,vsprintf } from './src/sprintf.js';
 
@@ -29,7 +30,7 @@ Object.assign(typeof(jQuery) === 'undefined' ? globalThis : jQuery,{
   CachedFetch,
   fetchJson,fetchText,fetchBlob,
   b64encode,b64decode,
-  tableToArray,
+  tableToArray,rowsToTable,
   resize,
   sprintf,vsprintf,
 });
