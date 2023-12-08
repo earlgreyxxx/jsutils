@@ -23,9 +23,6 @@ export default function(rows,options = {})
   const tbody = ['<tbody>',...rows.map(tr => ['<tr>',...Array.from(headers).map(column => `<td>${Type.isMap(tr) ? tr.get(column) : tr[column]}</td>`),'</tr>']),'</tbody>'];
   const html = [thead,tbody].flat(Infinity);
 
-  console.log(['<table>', html, '</table>'].flat().join('\n'));
-  return;
-
   return retType === 'HTMLElement' ? strCreateTable(html.join('')) : ['<table>',html,'</table>'].flat().join('\n');
 }
 
