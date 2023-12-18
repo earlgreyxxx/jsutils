@@ -19,7 +19,16 @@ export function fetchResponse(url,params,fetchOptions = {})
 
   const done = response => {
     if(!response.ok)
-      throw new Error('Failed to server connection.');
+    {
+      const e = new Error('Failed to server connection.');
+      e.result = { 
+        status: response.status,
+        statusText: response.statusText,
+        headers: new Headers(response.headers)
+      };
+
+      throw e;
+    }
 
     return response;
   };
