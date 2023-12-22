@@ -5,6 +5,8 @@
 *******************************************************************************/
 export default class
 {
+  static firstCall = true;
+
   #name;
   #expire;
   enabled;
@@ -49,8 +51,9 @@ export default class
     const cache = await caches.open(this.#name);
     const today = Math.ceil(new Date().getTime() / 1000);
     let response = await cache.match(url);
+    const period = parseInt(response?.headers.get('cache-timestamp') || -1) + this.#expire;
 
-    if(!response || ((parseInt(response.headers.get('cache-timestamp') || -1) + this.#expire <= today)))
+    if(!response || period <= today )
     {
       response = await fetch(url,params);
       await this.#addex(url,response);
@@ -65,7 +68,16 @@ export default class
   async #addex(url,response)
   {
     if (!response.ok)
-      throw new TypeError("bad response status");
+    {
+      const e = new TypeError("bad response status");
+      e.result = { 
+        status: response.status,
+        statusText: response.statusText,
+        headers: new Headers(response.headers)
+      };
+
+      throw e;
+    }
 
     const cache = await caches.open(this.#name);
     const headers = new Headers(response.headers);
