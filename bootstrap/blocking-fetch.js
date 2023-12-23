@@ -5,8 +5,8 @@
 *   * required jQuery and Bootstrap spinner
 *
 *   exprot BlockWindow { lock(delay,{message,loading}),unlock(),message(HTMLElement || string(if not-string x.toString())) }
-*   export Blocking { fetch,fetchJson,fetchText,fetchBlob,lock,unlock,config }
-*   export NonBlocking { fetch,fetchJson,fetchText,fetchBlob }
+*   export Blocking { fetch,fetchJson,fetchText,fetchBlob,cachedJson,cachedText,cachedBlob,lock,unlock,config }
+*   export NonBlocking { fetch,fetchJson,fetchText,fetchBlob,cachedJson,cachedText,cachedBlob, }
 *   export config
 *
 *****************************************************************************/ 
@@ -35,30 +35,25 @@ const _lock_layer_css = {
 export const BlockWindow = {
   $frame : null,
   timeout: null,
+  refCounter: 0,
   lock: function(delay,{loading,message,spinner} = {}) {
-    if(this.$frame)
-      return this;
+
+    this.refCounter++;
 
     if(typeof(loading) !== 'boolean')
       loading = true;
-
-    if(!spinner)
-      spinner = '<span class="spinner-border text-light" style="width:64px;height:64px;"></span>';
-
-    this.$frame = $('<div />').css(_lock_layer_css);
-    if(loading === true)
-      this.$frame.append($(spinner));
-
-    this.$frame.append($('<span />').addClass('d-block my-5 text-center text-light blinking').attr('id', 'progress-message'));
-    this.$frame.appendTo(document.body);
 
     if(message)
       this.message(message);
 
     if(delay && typeof(delay) === 'number' && delay > 0)
-      this.timeout = setTimeout(() => this.$frame.show(),delay);
+    {
+      this.timeout = setTimeout(() => (this.$frame = createBackDrop(loading,spinner).show()),delay);
+    }
     else
-      this.$frame.show();
+    {
+      this.$frame = createBackDrop(loading,spinner).show();
+    }
 
     return this;
   },
@@ -69,7 +64,8 @@ export const BlockWindow = {
       clearTimeout(this.timeout);
       this.timeout = null;
     }
-    if(this.$frame)
+
+    if(--this.refCounter <= 0 && this.$frame)
     {
       this.$frame.remove();
       this.$frame = null;
@@ -103,6 +99,20 @@ export const BlockWindow = {
     return this;
   }
 };
+
+function createBackDrop(loading,spinner)
+{
+  if(!spinner)
+    spinner = '<span class="spinner-border text-light" style="width:64px;height:64px;"></span>';
+
+  const $frame = $('<div />').css(_lock_layer_css);
+  if(loading === true)
+    $frame.append($(spinner));
+
+  $frame.append($('<span />').addClass('d-block my-5 text-center text-light blinking').attr('id', 'progress-message'));
+
+  return $frame.appendTo(document.body);;
+}
 
 // blocking fetch
 function _bck_fetch(url,params,fetchOptions = { cache: 'no-store' })
@@ -207,6 +217,7 @@ Blocking.fetch = _bck_fetch;
 Blocking.fetchJson = _bck_fetch_json;
 Blocking.fetchText = _bck_fetch_text;
 Blocking.fetchBlob = _bck_fetch_blob;
+Blocking.cachedFetch = _bck_cached_fetch;
 Blocking.cachedJson = _bck_cached_json;
 Blocking.cachedText = _bck_cached_text;
 Blocking.cachedBlob = _bck_cached_blob;
@@ -223,6 +234,7 @@ NonBlocking.fetch = FetchUtils.fetchResponse;
 NonBlocking.fetchJson = FetchUtils.fetchJson;
 NonBlocking.fetchText = FetchUtils.fetchText;
 NonBlocking.fetchBlob = FetchUtils.fetchBlob;
+NonBlocking.cachedFetch = FetchUtils.cachedResponse;
 NonBlocking.cachedJson = FetchUtils.fetchJson;
 NonBlocking.cachedText = FetchUtils.fetchText;
 NonBlocking.cachedBlob = FetchUtils.fetchBlob;
