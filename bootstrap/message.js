@@ -27,7 +27,7 @@
 ******************************************************************************/
 import * as Type from '../utility/type.js';
 
-const $ = require('jquery');
+const $ = window.jQuery;
 let bootstrap;
 
 if(!window?.jQuery)

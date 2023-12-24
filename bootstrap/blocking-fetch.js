@@ -15,7 +15,7 @@ import CachedFetch from "../utility/cached-fetch.js";
 import ObjectToFormData from '../utility/object-formdata.js';
 import * as FetchUtils from '../utility/fetch-utils.js';
 
-const $ = require('jquery');
+const $ = window.jQuery;
 
 const _lock_layer_css = {
   backdropFilter: 'blur(1rem)',
