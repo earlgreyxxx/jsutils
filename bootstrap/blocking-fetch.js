@@ -37,7 +37,6 @@ export const BlockWindow = {
   timeout: null,
   refCounter: 0,
   lock: function(delay,{loading,message,spinner} = {}) {
-
     this.refCounter++;
 
     if(typeof(loading) !== 'boolean')
@@ -48,11 +47,15 @@ export const BlockWindow = {
 
     if(delay && typeof(delay) === 'number' && delay > 0)
     {
-      this.timeout = setTimeout(() => (this.$frame = createBackDrop(loading,spinner).show()),delay);
+      this.timeout = setTimeout(() => {
+        if(this.refCounter <= 1)
+          this.$frame = createBackDrop(loading,spinner).show()
+      },delay);
     }
     else
     {
-      this.$frame = createBackDrop(loading,spinner).show();
+      if(this.refCounter <= 1)
+        this.$frame = createBackDrop(loading,spinner).show();
     }
 
     return this;
@@ -65,9 +68,9 @@ export const BlockWindow = {
       this.timeout = null;
     }
 
-    if(--this.refCounter <= 0 && this.$frame)
+    if(--this.refCounter <= 0)
     {
-      this.$frame.remove();
+      this.$frame?.remove();
       this.$frame = null;
     }
 
@@ -90,13 +93,13 @@ export const BlockWindow = {
     return this;
   },
 
-  delayLock: function(delay) {
+  delayLock: function(delay,options = {}) {
     if(!delay || typeof(delay) !== 'number')
       delay = config.get('delay');
 
-    this.timeout = setTimeout(() => this.lock(),delay);
+    this.lock(delay,options);
 
-    return this;
+    return this.timeout;
   }
 };
 
@@ -111,7 +114,7 @@ function createBackDrop(loading,spinner)
 
   $frame.append($('<span />').addClass('d-block my-5 text-center text-light blinking').attr('id', 'progress-message'));
 
-  return $frame.appendTo(document.body);;
+  return $frame.appendTo(document.body);
 }
 
 // blocking fetch
@@ -177,7 +180,6 @@ function __imp_bck_fetch(funcFetch,url,params,fetchOptions = { cache: 'no-store'
   const fail = e => {
     if(tid)
       clearTimeout(tid);
-    BlockWindow.unlock();
     throw e;
   };
   const always = () => BlockWindow.unlock();
@@ -209,7 +211,8 @@ export const Blocking = function(promise,m)
     m = config.get('message');
 
   const delay = config.get('delay');
-  const timeoutID = BlockWindow.delayLock(delay).message(m);
+  const timeoutID = BlockWindow.delayLock(delay);
+  BlockWindow.message(m);
   return promise.then(() => clearTimeout(timeoutID)).catch(e => e).finally(() => BlockWindow.unlock());
 };
 
