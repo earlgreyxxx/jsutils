@@ -206,7 +206,7 @@ export function Popup(message,url,name = '_blank',feature = null,btnOkName = '�
       </div>
       <div class="modal-body">${message}</div>
       <div class="modal-footer justify-content-center">
-        <button type="button" class="btn btn-sm btn-dark" data-dismiss="modal">キャンセル</button>
+        <button type="button" class="btn btn-sm btn-dark" data-bs-dismiss="modal">キャンセル</button>
         <button type="button" class="btn btn-sm btn-success" id="open-window">${btnOkName}</button>
       </div>
     </div>
