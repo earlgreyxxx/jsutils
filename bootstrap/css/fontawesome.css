@@ -1,0 +1,17 @@
+@charset "utf-8";
+/******************************************************************************
+
+ ■ フォント
+
+	Font Awesome licensed under SIL OFL 1.1 ( http://scripts.sil.org/OFL )
+
+******************************************************************************/
+@font-face {
+  font-family: 'FontAwesome';
+  src: url('./woff/fontawesome-webfont.woff');
+}
+
+.fontawesome {
+  font-family: FontAwesome;
+}
+

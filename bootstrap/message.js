@@ -1,6 +1,6 @@
 /******************************************************************************
 
-  Bootstrap toast helper
+  Bootstrap toast helper ( FontAwesom 4.7 required and overide bootstrap css )
 
   export below functions.
     ModelessMessage(m,t,d)
