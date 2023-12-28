@@ -75,7 +75,7 @@ function __imp_fetchResponse(funcFetch,url,params,fetchOptions = {})
   };
 
   if(funcFetch instanceof CachedFetch)
-    return funcFetch.fetch(url,options).then(done).catch(fail).finally(always);
+    return funcFetch.fetch(url,options).then(done).catch(fail);
   else
-    return funcFetch(url,options).then(done).catch(fail).finally(always);
+    return funcFetch(url,options).then(done).catch(fail);
 }
