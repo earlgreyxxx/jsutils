@@ -56,8 +56,8 @@ function __get_query_string(q,delimitor,{ decoder,override,retMap })
   if(!q)
     q = window.location.search.slice(1);
 
-  const re1 = /(\w+)\[\]$/;
-  const re2 = /(\w+)\[([^\[\]]+)\]$/;
+  const re1 = /([\w\-]+)\[\]$/;
+  const re2 = /([\w\-]+)\[([^\[\]]+)\]$/;
 
   q = q.trim();
   if(q)
