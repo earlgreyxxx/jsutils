@@ -42,20 +42,23 @@ export const BlockWindow = {
     if(typeof(loading) !== 'boolean')
       loading = true;
 
-    if(message)
-      this.message(message);
-
     if(delay && typeof(delay) === 'number' && delay > 0)
     {
       this.timeout = setTimeout(() => {
         if(this.refCounter <= 1)
           this.$frame = createBackDrop(loading,spinner).show()
+
+        if(message)
+          this.message(message);
       },delay);
     }
     else
     {
       if(this.refCounter <= 1)
         this.$frame = createBackDrop(loading,spinner).show();
+
+      if(message)
+        this.message(message);
     }
 
     return this;
@@ -78,16 +81,13 @@ export const BlockWindow = {
   },
 
   message: function(m) {
-    if(this.$frame)
+    if (this.$frame && m)
     {
-      if(m)
-      {
-        const $message = this.$frame.find('#progress-message');
-        if(m instanceof HTMLElement)
-          $message.empty().append(m);
-        else
-          $message.empty().html(m.toString());
-      }
+      const $message = this.$frame.find('#progress-message');
+      if (m instanceof HTMLElement)
+        $message.empty().append(m);
+      else
+        $message.empty().html(m.toString());
     }
 
     return this;
