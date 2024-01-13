@@ -34,28 +34,34 @@ const _lock_layer_css = {
 
 export const BlockWindow = {
   $frame : null,
-  timeout: null,
+  timeout: [],
   refCounter: 0,
   lock: function(delay,{loading,message,spinner} = {}) {
-    this.refCounter++;
 
     if(typeof(loading) !== 'boolean')
       loading = true;
 
     if(delay && typeof(delay) === 'number' && delay > 0)
     {
-      this.timeout = setTimeout(() => {
-        if(this.refCounter <= 1)
+      this.timeout.push(
+        setTimeout(() => {
+          this.timeout.shift();
+          if (this.refCounter < 1)
           this.$frame = createBackDrop(loading,spinner).show()
+
+          this.refCounter++;
 
         if(message)
           this.message(message);
-      },delay);
+        }, delay)
+      );
     }
     else
     {
-      if(this.refCounter <= 1)
+      if(this.refCounter < 1)
         this.$frame = createBackDrop(loading,spinner).show();
+
+      this.refCounter++;
 
       if(message)
         this.message(message);
@@ -64,17 +70,14 @@ export const BlockWindow = {
     return this;
   },
 
-  unlock : function() {
-    if(this.timeout)
-    {
-      clearTimeout(this.timeout);
-      this.timeout = null;
-    }
+  unlock : function(clear) {
+    this.cancelTimeout();
 
-    if(--this.refCounter <= 0)
+    if(this.refCounter > 0 && (clear || --this.refCounter <= 0))
     {
       this.$frame?.remove();
       this.$frame = null;
+      this.refCounter = 0;
     }
 
     return this;
@@ -100,6 +103,17 @@ export const BlockWindow = {
     this.lock(delay,options);
 
     return this.timeout;
+  },
+
+  cancelTimeout: function() {
+    const timeout = this.timeout.shift();
+    if(timeout)
+      clearTimeout(timeout);
+  },
+
+  cancelTimeoutAll: function() {
+    this.timeout.forEach(tid => clearTimeout(tid));
+    this.timeout.splice(0);
   }
 };
 
@@ -160,8 +174,7 @@ function __imp_bck_fetch(funcFetch,url,params,fetchOptions = { cache: 'no-store'
   }
 
   const done = response => {
-    if(tid)
-      clearTimeout(tid);
+    BlockWindow.unlock();
 
     if(!response.ok)
     {
@@ -178,17 +191,16 @@ function __imp_bck_fetch(funcFetch,url,params,fetchOptions = { cache: 'no-store'
     return response;
   };
   const fail = e => {
-    if(tid)
-      clearTimeout(tid);
+    BlockWindow.unlock();
     throw e;
   };
-  const always = () => BlockWindow.unlock();
-  const tid = BlockWindow.delayLock();
+
+  BlockWindow.delayLock();
 
   if(funcFetch instanceof CachedFetch)
-    return funcFetch.fetch(url,options).then(done).catch(fail).finally(always);
+    return funcFetch.fetch(url,options).then(done).catch(fail);
   else
-    return funcFetch(url,options).then(done).catch(fail).finally(always);
+    return funcFetch(url,options).then(done).catch(fail);
 }
 
 const _bck_fetch_json = (url,params,fetchOptions) => _bck_fetch(url,params,fetchOptions).then(response => response.json());
@@ -211,9 +223,9 @@ export const Blocking = function(promise,m)
     m = config.get('message');
 
   const delay = config.get('delay');
-  const timeoutID = BlockWindow.delayLock(delay);
+  BlockWindow.delayLock(delay);
   BlockWindow.message(m);
-  return promise.then(() => clearTimeout(timeoutID)).catch(e => e).finally(() => BlockWindow.unlock());
+  return promise.catch(e => e).finally(() => BlockWindow.unlock());
 };
 
 Blocking.fetch = _bck_fetch;
