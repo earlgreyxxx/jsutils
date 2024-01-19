@@ -18,7 +18,7 @@ import { createQueryString,getQueryString } from './querystring.js';
 
 export function getCookie(name) 
 {
-  const cookies = getQueryString(document.cookie,/\s*;\s*/);
+  const cookies = getQueryString(document.cookie,/\s*;\s*/,{ retMap: true });
 
   if(Type.isString(name) && name.length > 0)
     return cookies.get(name);
@@ -28,7 +28,7 @@ export function getCookie(name)
 
 export function getCookies()
 {
-  return getQueryString(document.cookie,/\s*;\s*/);
+  return getQueryString(document.cookie,/\s*;\s*/,{ retMap: true });
 }
 
 export function setCookie(name,value = '',options = {})
