@@ -36,6 +36,10 @@ export const BlockWindow = {
   $frame : null,
   timeout: [],
   refCounter: 0,
+  isLocking: function() {
+    return this.refCounter > 0;
+  },
+
   lock: function(delay,{loading,message,spinner} = {}) {
 
     if(typeof(loading) !== 'boolean')
@@ -239,6 +243,7 @@ Blocking.cachedBlob = _bck_cached_blob;
 
 Blocking.lock = (delay,params) => BlockWindow.lock(delay,params);
 Blocking.unlock = () => BlockWindow.unlock();
+Blocking.isLocking = () => BlockWindow.isLocking();
 
 /// 非ブロック(通常の) fetch response
 export const NonBlocking = function(promise) {
