@@ -37,7 +37,7 @@ export const BlockWindow = {
   timeout: [],
   refCounter: 0,
   isLocking: function() {
-    return this.refCounter > 0;
+    return this.refCounter > 0 || this.timeout.length > 0;
   },
 
   lock: function(delay,{loading,message,spinner} = {}) {
