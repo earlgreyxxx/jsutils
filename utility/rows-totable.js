@@ -29,7 +29,7 @@ export default function(rows,options = {})
 function strCreateTable(html)
 {
   const table = document.createElement('table');
-  temp.insertAdjacentHTML('afterbegin',html);
+  table.insertAdjacentHTML('afterbegin',html);
 
   return table;
 }
