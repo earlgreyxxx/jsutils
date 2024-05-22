@@ -18,6 +18,8 @@ import tableToArray from './utility/table-toarray.js';
 import rowsToTable from './utility/rows-totable.js';
 import resize from './utility/resize-image.js';
 import { sprintf,vsprintf } from './utility/sprintf.js';
+import Dom from './utility/dom-utils.js';
+import { shuffle } from './utility/shuffle.js';
 
 Object.assign(typeof(jQuery) === 'undefined' ? globalThis : jQuery,{
   Type,
@@ -33,4 +35,6 @@ Object.assign(typeof(jQuery) === 'undefined' ? globalThis : jQuery,{
   tableToArray,rowsToTable,
   resize,
   sprintf,vsprintf,
+  Dom,
+  shuffle,
 });

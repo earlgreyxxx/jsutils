@@ -14,8 +14,7 @@ import { isFunction } from '../utility/type.js';
 import CachedFetch from "../utility/cached-fetch.js";
 import ObjectToFormData from '../utility/object-formdata.js';
 import * as FetchUtils from '../utility/fetch-utils.js';
-
-const $ = window.jQuery;
+import * as Dom from '../utility/dom-utils.js';
 
 const _lock_layer_css = {
   backdropFilter: 'blur(1rem)',
@@ -23,7 +22,7 @@ const _lock_layer_css = {
   bottom: 0,
   display: 'none',
   left: 0,
-  paddingTop: 200,
+  paddingTop: '200px',
   position: 'fixed',
   right: 0,
   textAlign: 'center',
@@ -51,7 +50,10 @@ export const BlockWindow = {
         setTimeout(() => {
           this.timeout.shift();
           if (this.refCounter < 1)
-          this.$frame = createBackDrop(loading,spinner).show()
+          {
+            this.$frame = createBackDrop(loading, spinner);
+            Dom.show(this.$frame);
+          }
 
           this.refCounter++;
 
@@ -63,7 +65,10 @@ export const BlockWindow = {
     else
     {
       if(this.refCounter < 1)
-        this.$frame = createBackDrop(loading,spinner).show();
+      {
+        this.$frame = createBackDrop(loading,spinner);
+        Dom.show(this.$frame);
+      }
 
       this.refCounter++;
 
@@ -79,6 +84,7 @@ export const BlockWindow = {
 
     if(this.refCounter > 0 && (clear || --this.refCounter <= 0))
     {
+      hide(this.$frame);
       this.$frame?.remove();
       this.$frame = null;
       this.refCounter = 0;
@@ -90,11 +96,12 @@ export const BlockWindow = {
   message: function(m) {
     if (this.$frame && m)
     {
-      const $message = this.$frame.find('#progress-message');
+      const $message = this.$frame.querySelector('#progress-message');
+      Dom.empty($message);
       if (m instanceof HTMLElement)
-        $message.empty().append(m);
+        $message.append(m);
       else
-        $message.empty().html(m.toString());
+        $message.insertAdjacentHTML('afterbegin',m.toString())
     }
 
     return this;
@@ -126,13 +133,20 @@ function createBackDrop(loading,spinner)
   if(!spinner)
     spinner = '<span class="spinner-border text-light" style="width:64px;height:64px;"></span>';
 
-  const $frame = $('<div />').css(_lock_layer_css);
+  const $backdrop = document.createElement('div');
+  Dom.css($backdrop,_lock_layer_css);
+
   if(loading === true)
-    $frame.append($(spinner));
+    $backdrop.append(Dom.create(spinner));
 
-  $frame.append($('<span />').addClass('d-block my-5 text-center text-light blinking').attr('id', 'progress-message'));
+  const $message = document.createElement('span');
+  $message.className = 'd-block my-5 text-center text-light blinking';
+  $message.setAttribute('id','progress-message');
+  $backdrop.append($message);
 
-  return $frame.appendTo(document.body);
+  document.body.append($backdrop);
+
+  return $backdrop;
 }
 
 // blocking fetch

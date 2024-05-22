@@ -60,7 +60,10 @@ export default class
 
       response = await cache.match(url);
     }
-
+    else
+    {
+      console.log('return cached data');
+    }
     return response;
   }
 

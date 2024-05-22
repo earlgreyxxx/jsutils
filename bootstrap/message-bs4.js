@@ -1,6 +1,6 @@
 /******************************************************************************
 
-  Bootstrap toast helper ( FontAwesom 4.7 required and overide bootstrap 5 css )
+  Bootstrap toast helper ( FontAwesom 4.7 required and overide bootstrap css )
 
   export below functions.
     ModelessMessage(m,t,d)
@@ -22,12 +22,23 @@
     ModelssMessage.onClose(cb) regist close handler(global)
     ModelessMessage.style(css) regist css style.
 
-    return value: Element
+    return value: jqo
 
 ******************************************************************************/
 import * as Type from '../utility/type.js';
-import * as Dom from '../utility/dom-utils.js';
-import { Toast,Modal } from 'bootstrap';
+
+const $ = window.jQuery;
+let bootstrap;
+
+if(!window?.jQuery)
+  window.jQuery = $;
+
+bootstrap = require('bootstrap');
+
+let restoreReader = false;
+
+if(!$)
+  throw new Error('require jQuery');
 
 /****************************************************************************
  * モードレスメッセージ
@@ -36,33 +47,31 @@ let refCount = 0;
 const defaultDelay = 10000;
 const defaultTitle = 'メッセージ';
 const ctnStyle = {
+  position: 'fixed',
   top: '3rem',
   right: '1rem',
-  width: '275px',
-  zIndex: 2000,
-  position: 'fixed',
-  display: 'none'
+  width: 275,
+  zIndex: 9999
 };
+const $container =
+  $('<div>')
+  .attr({id:'toast-container'})
+  .css(ctnStyle)
+  .hide()
+  .on('hidden.bs.toast','.toast',function() {
+    $(this).remove();
 
-const $container = document.createElement('div');
-$container.setAttribute('id','toast-container');
-Dom.css($container,ctnStyle);
-
-$container.addEventListener('hidden.bs.toast',ev => {
-  const $el = ev.target;
-  if(!$el.classList.contains('toast'))
-    return;
-  $el.remove();
-
-  if(--refCount == 0)
-    ev.currentTarget.remove();
-});
+    if(--refCount == 0)
+      $container.detach();
+  });
 
 const create = (m,t,d) => `
-<div class="toast shadow-sm hide mb-3" data-bs-delay="${d}">
+<div class="toast shadow-sm border-0 hide" data-bs-delay="${d}">
   <div class="toast-header border-0 pt-2 toast-header-custom">
-    <span class="d-inline-block me-auto"><span class="me-2 fontawesome d-inline-block">&#xf05a;</span>${t}</span>
-    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close" style="background-size: 45%;"></button>
+    <span class="d-inline-block me-auto"><big class="me-2 fontawesome">&#xf05a;</big>${t}</span>
+    <button type="button" class="ms-auto text-light font-weight-normal mt-n1 border-0" style="background-color: transparent;" data-bs-dismiss="toast">
+      <span class="text-dark fontawesome d-inline-block align-middle">&#xf057;</span>
+    </button>
   </div>
   <div class="toast-body toast-body-custom text-black">${m}</div>
 </div>
@@ -81,32 +90,22 @@ export function ModelessMessage(m,t,d)
     s = style;
   }
   const html = create(m || '',t || defaultTitle,d || defaultDelay);
-  const $el = Dom.create(html);
 
-  if(s && Type.isPlainObject(s))
-    Object.entries(s).forEach(([property,value]) => $container.style.setProperty(property.replace(/[A-Z]/g,m => ('-'+m.toLowerCase())),value));
+  if(s)
+    $container.css(s);
 
   if(refCount <= 0)
-  {
-    document.body.appendChild($container);
-    $container.style.setProperty('display','block','important');
-  }
+    $container.appendTo(document.body).show();
 
-  $container.append($el);
+  const $tooltip = $(html).appendTo($container).toast('show');
 
-  const toast = new Toast($el);
-  toast.show();
   refCount++;
-
-  return $el;
+  return $tooltip;
 }
 
 const onClickCloseModelessMessage = function(cb)
 {
-  document.body.addEventListener('click',ev => {
-    if(Array.from(ev.currentTarget.querySelectorAll('.toast .close')).some(el => ev.target === el))
-      cb.call(ev.target);
-  })
+  $(document.body).on('click','.toast .close',cb);
 };
 
 ModelessMessage.onClose = function(cb)
@@ -157,33 +156,33 @@ export function ModalMessage(m,t)
     bd = backdrop ?? 'static';
   }
 
-  const $modal = Dom.create(create(m || '',t || defaultTitle,s || '',bd))
-  const modal = new Modal($modal,{backdrop: 'static'});
+  const $modal = $(create(m || '',t || defaultTitle,s || '',bd));
 
-  $modal.addEventListener('hidden.bs.modal',ev => {
-    modal.dispose();
-    ev.currentTarget.remove();
-    window.focus();
-  });
-  $modal.addEventListener('hide.bs.modal',ev => {
-    if(fnClosing)
-      fnClosing.call(ev.currentTarget,ev);
-  });
-  $modal.addEventListener('show.bs.modal',ev => {
-    if(fnOpening)
-      fnOpening.call(ev.currentTarget,ev);
-  });
+  $modal
+    .on('hidden.bs.modal',function() {
+      $(this).modal('dispose');
+      $(this).remove();
 
-  modal.show();
+      $(window).trigger('focus');
+    })
+    .on('hide.bs.modal',function(ev) {
+      if(fnClosing)
+        fnClosing.call(this,ev);
+    })
+    .on('show.bs.modal',function(ev) {
+      if(fnOpening)
+        fnOpening.call(this,ev);
+    });
+
+
+  $modal.modal('show');
+
   return $modal;
 };
 
 const onClickCloseModalMessage = function(cb)
 {
-  document.body.addEventListener('click', ev => {
-    if(Array.from(ev.currentTarget.querySelectorAll('div#modal-message.modal button').some(el => ev.target === el)))
-      cb.call(ev.target);
-  })
+  $(document.body).on('click','div#modal-message.modal button',cb);
 };
 
 ModalMessage.onClose = function(cb)
@@ -214,23 +213,18 @@ export function Popup(message,url,name = '_blank',feature = null,btnOkName = '�
   </div>
 </div>`.trim();
 
-  const $modal = Dom.create(getModal(message));
-  const modal = new Modal($modal,{backdrop: 'static'});
-
-  $modal.addEventListener('shown.bs.modal',ev => {
-    ev.target.querySelector('#open-window').focus();
-  });
-  $modal.addEventListener('hidden.bs.modal',ev => {
-    modal.dispose();
-    ev.target.remove();
-    window.focus();
-  });
-  $modal.addEventListener('click',ev => {
-    if(ev.target.getAttribute('id') === 'open-window')
+  const $dlg = $(getModal(message))
+    .on('shown.bs.modal', function () {
+      $('#open-window', this).focus();
+    })
+    .on('hidden.bs.modal', function () {
+      $(this).modal('dispose');
+      $(this).remove();
+      $(window).trigger('focus');
+    })
+    .on('click', '#open-window', function () {
       window.open(url,name,feature);
-  });
+    }).modal('show');
 
-  modal.show();
-  
-  return $modal;
+  return $dlg;
 }
