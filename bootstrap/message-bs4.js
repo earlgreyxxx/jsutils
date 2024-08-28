@@ -16,7 +16,7 @@
 
     if m is plain object, t or d ignored.
       m = { message,title,delay } for ModelessMessage
-      m = { message,title,size,opening,callback,closing,backdrop } for ModalMessage
+      m = { message,title,size,opening,opened,callback,closing,backdrop } for ModalMessage
 
     ModalMessage.onClose(cb) regist close handler(global)
     ModelssMessage.onClose(cb) regist close handler(global)
@@ -144,15 +144,16 @@ export function ModalMessage(m,t)
 </div>
 `.trim();
 
-  let s,fnOpening,fnClosing,bd = 'static';
+  let s,fnOpening,fnOpened,fnClosing,bd = 'static';
   if(Type.isPlainObject(m))
   {
-    let {title,message,size,opening,callback,closing,backdrop} = m;
+    let {title,message,size,opening,callback,closing,opened,backdrop} = m;
     m = message;
     t = title;
     s = size;
     fnOpening = opening || callback;
     fnClosing = closing;
+    fnOpened = opened;
     bd = backdrop ?? 'static';
   }
 
@@ -172,6 +173,9 @@ export function ModalMessage(m,t)
     .on('show.bs.modal',function(ev) {
       if(fnOpening)
         fnOpening.call(this,ev);
+    })
+    .on('shown.bs.modal',function(ev) {
+      fnOpened?.call(this, ev);
     });
 
 
