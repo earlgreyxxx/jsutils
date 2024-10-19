@@ -145,7 +145,7 @@ export function ModalMessage(m,t)
 </div>
 `.trim();
 
-  let s,fnOpening,fnClosing,bd = 'static';
+  let s,fnOpening,fnClosing,fnOpened,bd = 'static';
   if(Type.isPlainObject(m))
   {
     let {title,message,size,opening,opened,callback,closing,backdrop} = m;
