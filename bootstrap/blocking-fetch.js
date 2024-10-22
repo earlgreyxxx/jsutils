@@ -84,7 +84,7 @@ export const BlockWindow = {
 
     if(this.refCounter > 0 && (clear || --this.refCounter <= 0))
     {
-      hide(this.$frame);
+      Dom.hide(this.$frame);
       this.$frame?.remove();
       this.$frame = null;
       this.refCounter = 0;
