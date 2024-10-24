@@ -59,7 +59,7 @@ export function on(element_or_selector,eventname,selector,handler)
     if(isNodeList(element_or_selector))
       root = element_or_selector;
     else if(isString(element_or_selector))
-      root = document.querySelectorAll(element_or_selector);
+      root = document.querySelectorAll(element_or_selector) ?? [];
     else
       throw new Error('argument type error');
 
