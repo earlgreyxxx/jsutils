@@ -1,6 +1,6 @@
 /*****************************************************************************
  * object to table element
- * fn: filter function. prototype: function fn(v); 
+ * rowFilter or cellFilter : filter function. prototype: function fn(row) : returns start tag string(tr or td)
  *      in filter function, pass HTMLTableCellElement to v
  * 
  *  rows: array of plain object or Map
@@ -13,7 +13,7 @@ import * as Type from './type.js';
 
 export default function(rows,options = {})
 {
-  let {headers,labels,retType} = options;
+  let {headers,labels,retType,rowFilter,cellFilter} = options;
 
   if(!Type.isArray(rows) || rows.length == 0)
     return;
@@ -38,9 +38,33 @@ export default function(rows,options = {})
     labels = Array.from(headers);
   }
 
-  const thead = ['<thead>','<tr>',...labels.map(th => `<th>${th}</th>`),'</tr>','</thead>'];
-  const tbody = ['<tbody>',...rows.map(tr => ['<tr>',...Array.from(headers).map(column => `<td>${Type.isMap(tr) ? tr.get(column) : tr[column]}</td>`),'</tr>']),'</tbody>'];
-  const html = [thead,tbody].flat(Infinity);
+  const trs = rows.map(row => {
+    let sTr = '<tr>',eTr = '</tr>';
+    if (rowFilter && Type.isFunction(rowFilter))
+      sTr = rowFilter(row);
+
+    if(!sTr.match(/^<tr[^>]*>$/i))
+      sTr = '<tr error>';
+
+    const columns = Array.from(headers).map(columnName => {
+      let sTd = '<td>',eTd = '</td>';
+      const cellValue = Type.isMap(row) ? row.get(columnName) : row[columnName]
+      if (cellFilter && Type.isFunction(cellFilter))
+        sTd = cellFilter([columnName, cellValue])
+
+      if(!sTd.match(/^<td[^>]*>$/i))
+        sTd = '<td>';
+
+      return [sTd, cellValue, eTd];
+    });
+
+    return [sTr, ...columns, eTr];
+  });
+
+  const html = [
+    ['<thead>', '<tr>', ...labels.map(th => `<th>${th}</th>`), '</tr>', '</thead>'],
+    ['<tbody>', ...trs, '</tbody>']
+  ].flat(Infinity);
 
   return retType === 'HTMLElement' ? strCreateTable(html.join('')) : ['<table>',html,'</table>'].flat().join('\n');
 }
