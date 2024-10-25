@@ -1,19 +1,22 @@
 /*****************************************************************************
  * object to table element
- * rowFilter or cellFilter : filter function. prototype: function fn(row) : returns start tag string(tr or td)
- *      in filter function, pass HTMLTableCellElement to v
- * 
+ * --------------------------------
  *  rows: array of plain object or Map
  *  options 
  *     headers: array of object keys 
  *     labels: plain object or Map of header label association
  *     retType: if specified 'HTMLElement' return HTMLTableElement instance
+ * 
+ *     rowFilter: (row,index)
+ *     cellFilter: (columnname,cellvalue,index)
+ *     headerCellFilter: (cellvalue,index)
+ *       each filter function is Function or ArrowFunction and returns start tag string(tr,td,th)
 *****************************************************************************/
 import * as Type from './type.js';
 
 export default function(rows,options = {})
 {
-  let {headers,labels,retType,rowFilter,cellFilter} = options;
+  let {headers,labels,retType,rowFilter,cellFilter,headerCellFilter} = options;
 
   if(!Type.isArray(rows) || rows.length == 0)
     return;
@@ -38,31 +41,43 @@ export default function(rows,options = {})
     labels = Array.from(headers);
   }
 
-  const trs = rows.map(row => {
+  const trs = rows.map((row,index) => {
     let sTr = '<tr>',eTr = '</tr>';
     if (rowFilter && Type.isFunction(rowFilter))
-      sTr = rowFilter(row);
+    {
+      sTr = rowFilter(row,index) ?? '';
+      if(!sTr.match(/^<tr[^>]*>$/i))
+        sTr = '<tr error>';
+    }
 
-    if(!sTr.match(/^<tr[^>]*>$/i))
-      sTr = '<tr error>';
-
-    const columns = Array.from(headers).map(columnName => {
+    const columns = Array.from(headers).map((columnName,index) => {
       let sTd = '<td>',eTd = '</td>';
       const cellValue = Type.isMap(row) ? row.get(columnName) : row[columnName]
       if (cellFilter && Type.isFunction(cellFilter))
-        sTd = cellFilter([columnName, cellValue])
-
-      if(!sTd.match(/^<td[^>]*>$/i))
-        sTd = '<td>';
-
+      {
+        sTd = cellFilter([columnName, cellValue, index]) ?? '';
+        if (!sTd.match(/^<td[^>]*>$/i))
+          sTd = '<td>';
+      }
       return [sTd, cellValue, eTd];
     });
 
     return [sTr, ...columns, eTr];
   });
 
+  labels = labels.map((value,index) => {
+    let sTh = '<th>',eTh = '</th>';
+    if(headerCellFilter && Type.isFunction(headerCellFilter))
+    {
+      sTh = headerCellFilter(value,index) ?? '';
+      if (!sTh.match(/^<th[^>]*>$/i))
+        sTh = '<th>';
+    }
+    return [sTh,value,eTh];
+  });
+
   const html = [
-    ['<thead>', '<tr>', ...labels.map(th => `<th>${th}</th>`), '</tr>', '</thead>'],
+    ['<thead>', '<tr>', ...labels, '</tr>', '</thead>'],
     ['<tbody>', ...trs, '</tbody>']
   ].flat(Infinity);
 
