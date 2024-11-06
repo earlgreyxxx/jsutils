@@ -43,9 +43,9 @@ export function on(element_or_selector,eventname,selector,handler)
   const invoker = (_,event) => isArrowFunction(handler) ? handler(_,event) : handler.call(_,event);
 
   const listener = ev => {
-    const element = ev.currentTarget.querySelectorAll(selector);
-    if (element)
-      Array.from(element).filter(_ => _ === ev.target || _.contains(ev.target)).forEach(_ => invoker(_,ev));
+    const element = ev.target.closest(selector);
+    if(element && ev.currentTarget.contains(element))
+      invoker(element,ev);
   }
 
   if(isHtmlElement(element_or_selector))
