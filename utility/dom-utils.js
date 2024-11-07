@@ -37,6 +37,7 @@ export function hide(element)
   element.style.setProperty('display','none');
 }
 
+// _handlers:map<myId:string,names:map<name:string,handlers:[]>>
 const _handlers = new Map;
 
 // alternative for jQuery.on(eventname,selector,handler) and .on(eventname,handler)
@@ -48,15 +49,28 @@ export function on(element_or_selector,eventname,selector,handler)
     const element = ev.target.closest(selector);
     if(element && ev.currentTarget.contains(element))
       invoker(element,ev);
-  }
+  };
 
   const eventHandler = isFunction(selector) ? selector : listener;
+
+  const inserter = (el,nm,eh) => {
+    const myId = el.dataset.myId = Math.random().toString().slice(2);
+    if(!_handlers.has(myId))
+      _handlers.set(myId,new Map);
+
+    const eventnames = _handlers.get(myId);
+    if(!eventnames.has(nm))
+      eventnames.set(nm,[])
+
+    const handlers = eventnames.get(nm);
+
+    handlers.push(eh);
+  };
 
   if(isHtmlElement(element_or_selector))
   {
     const element = element_or_selector;
-    _handlers.set(element,{ eventname, eventHandler });
-
+    inserter(element,eventname,eventHandler);
     element.addEventListener(eventname,eventHandler);
   }
   else
@@ -70,8 +84,8 @@ export function on(element_or_selector,eventname,selector,handler)
       throw new Error('argument type error');
 
     root.forEach(el => {
+      inserter(el, eventname, eventHandler);
       el.addEventListener(eventname,eventHandler);
-      _handlers.set(el,{ eventname,eventHandler });
     });
   }
 }
@@ -79,15 +93,25 @@ export function on(element_or_selector,eventname,selector,handler)
 // alternative for jQuery.off(eventname)
 export function off(element_or_selector,eventname)
 {
+  const remover = (el,nm) => {
+    const { myId } = el.dataset;
+    if(!myId)
+      return;
+
+    const eventnames = _handlers.get(myId);
+    if(!eventnames)
+      return;
+
+    const handlers = eventnames.get(nm) ?? [];
+    eventnames.delete(nm);
+
+    return handlers;
+  };
+
   if(isHtmlElement(element_or_selector))
   {
     const element = element_or_selector;
-    const item = _handlers.get(element);
-    if(item && item.eventname === eventname)
-    {
-      element.removeEventListener(eventname, item.eventHandler);
-      _handlers.remove(element);
-    }
+    remover(element,eventname).forEach(handler => element.removeEventListener(eventname, item.eventHandler));
   }
   else
   {
@@ -100,13 +124,7 @@ export function off(element_or_selector,eventname)
       throw new Error('argument type error');
 
     root.forEach(el => {
-      const item = _handlers.get(el);
-      if(item && item.eventname === eventname)
-      {
-        el.removeEventListener(eventname,item.eventHandler);
-        _handlers.remove(el);
-      }
+      remover(el, eventname).forEach(handler => el.removeEventListener(eventname, handler));
     });
   }
-  
 }
