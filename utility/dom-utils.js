@@ -151,3 +151,16 @@ export function queries(selector,element)
 
   return element.querySelectorAll(selector);
 }
+
+export const insertAfter = (src,dest) => _element_inserter.call(dest,'afterend',src);
+export const insertBefore = (src,dest) => _element_inserter.call(dest,'beforebegin',src);
+export const appendTo = (src,dest) => _element_inserter.call(dest,'afterbegin',src);
+export const prependTo = (src,dest) => _element_inserter.call(dest,'beforeend',src);
+
+function _element_inserter(position,src)
+{
+  if(isString(src))
+    this.insertAdjacentHtml(position, src);
+  else if(src instanceof HTMLElement)
+    this.insertAdjacentElement(position,src);
+}
