@@ -8,7 +8,7 @@
  *   css(HTMLElement,object)
  *   show(HTMLElement,string = 'block')
  *   hide(HTMLElement)
- *   on(HTMLElement|string,string,string,Function)
+ *   on(HTMLElement|string,string,string|Function,Function | null)
  *   off(HTMLElement|string,string)
  *   query(string,HTMLElement|Document = null)
  *   queries(string,HTMLElement|Document = null)
