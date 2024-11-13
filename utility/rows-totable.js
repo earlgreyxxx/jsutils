@@ -9,6 +9,7 @@
  * 
  *     rowFilter: (row,index)
  *     cellFilter: (columnname,cellvalue,index)
+ *     cellValueFilter (columnname,cellvalue,index)
  *     headerCellFilter: (cellvalue,index)
  *       each filter function is Function or ArrowFunction and returns start tag string(tr,td,th)
 *****************************************************************************/
@@ -16,7 +17,7 @@ import * as Type from './type.js';
 
 export default function(rows,options = {})
 {
-  let {headers,labels,retType,rowFilter,cellFilter,headerCellFilter} = options;
+  let {headers,labels,retType,rowFilter,cellFilter,cellValueFilter,headerCellFilter} = options;
 
   if(!Type.isArray(rows) || rows.length == 0)
     return;
@@ -52,13 +53,21 @@ export default function(rows,options = {})
 
     const columns = Array.from(headers).map((columnName,index) => {
       let sTd = '<td>',eTd = '</td>';
-      const cellValue = Type.isMap(row) ? row.get(columnName) : row[columnName]
+      let cellValue = Type.isMap(row) ? row.get(columnName) : row[columnName]
       if (cellFilter && Type.isFunction(cellFilter))
       {
-        sTd = cellFilter([columnName, cellValue, index]) ?? '';
+        sTd = cellFilter(columnName, cellValue, index) ?? '';
         if (!sTd.match(/^<td[^>]*>$/i))
           sTd = '<td>';
       }
+
+      if(cellValueFilter && Type.isFunction(cellValueFilter))
+      {
+        const filtered = cellValueFilter(columnName,cellValue,index) ?? false;
+        if(Type.isString(filtered))
+          cellValue = filtered;
+      }
+      
       return [sTd, cellValue, eTd];
     });
 
