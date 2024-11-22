@@ -258,6 +258,7 @@ Blocking.cachedBlob = _bck_cached_blob;
 Blocking.lock = (delay,params) => BlockWindow.lock(delay,params);
 Blocking.unlock = () => BlockWindow.unlock();
 Blocking.isLocking = () => BlockWindow.isLocking();
+Blocking.message = m => BlockWindow.message(m);
 
 /// 非ブロック(通常の) fetch response
 export const NonBlocking = function(promise) {
