@@ -160,7 +160,7 @@ export const prependTo = (src,dest) => _element_inserter.call(dest,'beforeend',s
 function _element_inserter(position,src)
 {
   if(isString(src))
-    this.insertAdjacentHtml(position, src);
+    this.insertAdjacentHTML(position, src);
   else if(src instanceof HTMLElement)
     this.insertAdjacentElement(position,src);
 }
