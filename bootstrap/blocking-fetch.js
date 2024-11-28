@@ -18,7 +18,6 @@ import * as Dom from '../utility/dom-utils.js';
 
 const _lock_layer_css = {
   backdropFilter: 'blur(1rem)',
-  backgroundColor: 'rgba(0,0,0,.5)',
   bottom: 0,
   display: 'none',
   left: 0,
@@ -131,13 +130,13 @@ export const BlockWindow = {
 function createBackDrop(loading,spinner)
 {
   if(!spinner)
-    spinner = '<span class="spinner-border text-light" style="width:64px;height:64px;"></span>';
+    spinner = '<span class="spinner-border text-dark" style="width:64px;height:64px;"></span>';
 
   const $backdrop = document.createElement('div');
   Dom.css($backdrop,_lock_layer_css);
 
   if(loading === true)
-    $backdrop.append(Dom.create(spinner));
+    Dom.appendTo(spinner,$backdrop);
 
   const $message = document.createElement('span');
   $message.className = 'd-block my-5 text-center text-light blinking';

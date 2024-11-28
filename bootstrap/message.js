@@ -33,7 +33,7 @@ import { Toast,Modal } from 'bootstrap';
  * モードレスメッセージ
 *****************************************************************************/ 
 let refCount = 0;
-const defaultDelay = 10000;
+let defaultDelay = 10000;
 const defaultTitle = 'メッセージ';
 const ctnStyle = {
   top: '3rem',
@@ -118,6 +118,14 @@ ModelessMessage.style = function(props)
 {
   return Object.assign(ctnStyle,props);
 };
+
+ModelessMessage.delay = function(ms)
+{
+  if(!ms || isNaN(parseInt(ms)))
+    return;
+
+  defaultDelay = parseInt(ms);
+}
 
 
 /****************************************************************************
