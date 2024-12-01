@@ -12,6 +12,9 @@
  *   off(HTMLElement|string,string)
  *   query(string,HTMLElement|Document = null)
  *   queries(string,HTMLElement|Document = null)
+ *   byId(id)
+ *   byTag(tagname)
+ *   byClass(classname)
 ******************************************************************************/
 import { isString,isHtmlElement,isNodeList,isFunction,isArrowFunction } from './type.js';
 
@@ -152,10 +155,19 @@ export function queries(selector,element)
   return element.querySelectorAll(selector);
 }
 
+// alias for document.getElementById
+export const byId = id => document.getElementById(id);
+
+// alias for document.getElementsByTagName
+export const byTag = tagname => document.getElementsByTagName(tagname);
+
+// alias for document.getElementsByClassName
+export const byClass = classname => document.getElementsByClassName(classname);
+
 export const insertAfter = (src,dest) => _element_inserter.call(dest,'afterend',src);
 export const insertBefore = (src,dest) => _element_inserter.call(dest,'beforebegin',src);
-export const appendTo = (src,dest) => _element_inserter.call(dest,'afterbegin',src);
-export const prependTo = (src,dest) => _element_inserter.call(dest,'beforeend',src);
+export const appendTo = (src,dest) => _element_inserter.call(dest,'beforeend',src);
+export const prependTo = (src,dest) => _element_inserter.call(dest,'afterbegin',src);
 
 function _element_inserter(position,src)
 {
