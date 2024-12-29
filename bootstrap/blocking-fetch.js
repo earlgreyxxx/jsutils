@@ -139,7 +139,7 @@ function createBackDrop(loading,spinner)
     Dom.appendTo(spinner,$backdrop);
 
   const $message = document.createElement('span');
-  $message.className = 'd-block my-5 text-center text-light blinking';
+  $message.className = 'd-block my-5 text-center blinking';
   $message.setAttribute('id','progress-message');
   $backdrop.append($message);
 
