@@ -1,0 +1,1 @@
+declare export default  function(oTable: HTMLTableElement,options: {[key:string?]: any } = {}) : any;
