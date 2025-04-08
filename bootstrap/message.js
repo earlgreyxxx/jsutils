@@ -61,7 +61,7 @@ $container.addEventListener('hidden.bs.toast',ev => {
 const create = (m,t,d) => `
 <div class="toast shadow-sm hide mb-3" data-bs-delay="${d}">
   <div class="toast-header border-0 pt-2 toast-header-custom">
-    <span class="d-inline-block me-auto"><span class="me-2 fontawesome d-inline-block">&#xf05a;</span>${t}</span>
+    <span class="d-inline-block me-auto"><span class="me-2 d-inline-block">📚</span>${t}</span>
     <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close" style="background-size: 45%;"></button>
   </div>
   <div class="toast-body toast-body-custom text-black">${m}</div>
