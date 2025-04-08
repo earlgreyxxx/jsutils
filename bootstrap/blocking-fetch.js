@@ -234,7 +234,7 @@ export const config = new Map(
   ]
 );
 
-export const Blocking = function(promise,m)
+export function Blocking(promise,m)
 {
   if(!m)
     m = config.get('message');

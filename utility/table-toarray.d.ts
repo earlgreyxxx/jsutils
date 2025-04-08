@@ -1,1 +1,2 @@
-declare export default  function(oTable: HTMLTableElement,options: {[key:string?]: any } = {}) : any;
+declare function tableToArray(oTable: HTMLTableElement,options: {[key:string]: any }) : Array<any>;
+export default tableToArray; 
