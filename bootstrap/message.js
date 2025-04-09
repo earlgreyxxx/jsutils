@@ -59,7 +59,7 @@ $container.addEventListener('hidden.bs.toast',ev => {
 });
 
 const create = (m,t,d) => `
-<div class="toast shadow-sm hide mb-3" data-bs-delay="${d}">
+<div class="toast shadow-sm hide mb-3 mx-auto fade" data-bs-delay="${d}">
   <div class="toast-header border-0 pt-2 toast-header-custom">
     <span class="d-inline-block me-auto"><span class="me-2 d-inline-block">📚</span>${t}</span>
     <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close" style="background-size: 45%;"></button>
@@ -89,6 +89,9 @@ export function SetModelessMessagePosition(position,width = undefined)
     return false;
   }
   
+  if(width)
+    ctnStyle.width = $container.style.width = width;
+
   if(x === 'left')
   {
     $container.style.left = ctnStyle.right;
@@ -101,20 +104,13 @@ export function SetModelessMessagePosition(position,width = undefined)
   }
   else if(x === 'center')
   {
-    const w = parseInt(ctnStyle.width.replace(/\D/g,'')) / 2;
-    if(isNaN(w))
-      return false;
-    
-    $container.style.left = `calc(50% - ${w}px)`;
+    $container.style.left = `calc(50% - ${ctnStyle.width} / 2)`;
     $container.style.right = 'initial';
   }
   else
   {
     return false;
   }
-
-  if(width && Type.isNumeric(width))
-    $container.style.width = parseInt(width) + 'px';
 
   return true;
 }
