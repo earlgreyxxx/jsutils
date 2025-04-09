@@ -38,7 +38,7 @@ const defaultTitle = 'メッセージ';
 const ctnStyle = {
   top: '3rem',
   right: '1rem',
-  width: '275px',
+  width: '274px',
   zIndex: 2000,
   position: 'fixed',
   display: 'none'
@@ -68,12 +68,63 @@ const create = (m,t,d) => `
 </div>
 `.trim();
 
+export function SetModelessMessagePosition(position,width = undefined)
+{
+  if(!Type.isString(position))
+    return;
+
+  let [y,x] = position.split(/\s*:\s*/,2);
+  if(y === 'top')
+  {
+    $container.style.top = ctnStyle.top;
+    $container.style.bottom = 'initial';
+  }
+  else if(y === 'bottom')
+  {
+    $container.style.top = 'initial'
+    $container.style.bottom = '0rem';
+  }
+  else
+  {
+    return false;
+  }
+  
+  if(x === 'left')
+  {
+    $container.style.left = ctnStyle.right;
+    $container.style.right = 'initial';
+  }
+  else if(x === 'right')
+  {
+    $container.style.left = 'initial';
+    $container.style.right = ctnStyle.right;
+  }
+  else if(x === 'center')
+  {
+    const w = parseInt(ctnStyle.width.replace(/\D/g,'')) / 2;
+    if(isNaN(w))
+      return false;
+    
+    $container.style.left = `calc(50% - ${w}px)`;
+    $container.style.right = 'initial';
+  }
+  else
+  {
+    return false;
+  }
+
+  if(width && Type.isNumeric(width))
+    $container.style.width = parseInt(width) + 'px';
+
+  return true;
+}
+
 export function ModelessMessage(m,t,d)
 {
   let s;
   if(Type.isPlainObject(m))
   {
-    let {title,message,delay,style} = m;
+    let {title,message,delay,style,position} = m;
 
     m = message;
     t = title;
