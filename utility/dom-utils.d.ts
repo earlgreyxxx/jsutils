@@ -1,4 +1,5 @@
 type EventHandler = (ev:Event) => void;
+type MultiEventHandler = (el:Element,ev:Event) => void;
 
 export declare function createElement(str : string): HTMLElement;
 export declare function create(str : string): HTMLElement;
@@ -8,10 +9,10 @@ export declare function show(element : HTMLElement, value : string): void;
 export declare function hide(element : HTMLElement): void;
 
 export declare function on(element_or_selector : EventTarget|string, eventname : string, handler : EventHandler): void;
-export declare function on(element_or_selector : EventTarget|string, eventname : string, selector : string, handler? : EventHandler): void;
+export declare function on(element_or_selector : EventTarget|string, eventname : string, selector : string, handler? : MultiEventHandler): void;
 
 export declare function once(element_or_selector : EventTarget|string, eventname : string, handler : EventHandler): void;
-export declare function once(element_or_selector : EventTarget|string, eventname : string, selector : string, handler : EventHandler): void;
+export declare function once(element_or_selector : EventTarget|string, eventname : string, selector : string, handler : MultiEventHandler): void;
 
 export declare function off(element_or_selector : EventTarget|string, eventname : string): void;
 export declare function query(selector : string, element : Document|Window|Element): void;

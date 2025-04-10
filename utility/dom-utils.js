@@ -81,10 +81,7 @@ const _remover = (el, nm) => {
 function __imp_on(options,element_or_selector,eventname,selector,handler)
 {
   const def = {};
-  if(isPlainObject(options))
-    options = Object.assign(def,options);
-  else
-    options = def;
+  const settings = isPlainObject(options) ? Object.assign(def,options) : def;
 
   const invoker = (_,event) => isArrowFunction(handler) ? handler(_,event) : handler.call(_,event);
 
@@ -100,7 +97,7 @@ function __imp_on(options,element_or_selector,eventname,selector,handler)
   {
     const element = element_or_selector;
     _inserter(element,eventname,eventHandler);
-    element.addEventListener(eventname,eventHandler,options);
+    element.addEventListener(eventname,eventHandler,settings);
   }
   else
   {
@@ -114,7 +111,7 @@ function __imp_on(options,element_or_selector,eventname,selector,handler)
 
     root.forEach(el => {
       _inserter(el, eventname, eventHandler);
-      el.addEventListener(eventname,eventHandler,options);
+      el.addEventListener(eventname,eventHandler,settings);
     });
   }
 }

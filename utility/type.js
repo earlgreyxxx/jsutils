@@ -16,8 +16,9 @@ export const isMap = o => 'Map' === getType(o);
 export const isSet = o => 'Set' === getType(o);
 export const isDate = o => 'Date' === getType(o);
 export const isHtmlElement = o => o instanceof HTMLElement;
-export const isNodeList = o => 'NodeList' === getType(o);
-export const isArray = Array.isArray;
+export const isNodeList = o => o instanceof NodeList;
+export const isEventTarget = o => o instanceof EventTarget;
+export const isArray = o => Array.isArray(o);
 export const isArrowFunction = o => isFunction(o) && !o.hasOwnProperty('prototype');
 
 export const is = (o,typename) => typename === getType(o);

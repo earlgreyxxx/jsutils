@@ -10,6 +10,7 @@ export declare function isSet(o : any): boolean;
 export declare function isDate(o : any): boolean;
 export declare function isHtmlElement(o : any): boolean;
 export declare function isNodeList(o : any): boolean;
-export declare function isArray(value : any): boolean;
+export declare function isEventTarget(o : any): boolean;
+export declare function isArray(o : any): boolean;
 export declare function isArrowFunction(o : any): boolean;
 export declare function is(o : any, typename : string): boolean;
