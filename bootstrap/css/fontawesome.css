@@ -8,7 +8,7 @@
 ******************************************************************************/
 @font-face {
   font-family: 'FontAwesome';
-  src: url('./woff/fontawesome-webfont.woff');
+  src: url('./woff/fontawesome-webfont.woff?inline');
 }
 
 .fontawesome {

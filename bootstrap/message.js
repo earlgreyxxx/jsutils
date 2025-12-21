@@ -36,9 +36,9 @@ let refCount = 0;
 let defaultDelay = 10000;
 const defaultTitle = 'メッセージ';
 const ctnStyle = {
-  top: '3rem',
+  top: '1rem',
   right: '1rem',
-  width: '275px',
+  width: '300px',
   zIndex: 2000,
   position: 'fixed',
   display: 'none'
@@ -59,21 +59,68 @@ $container.addEventListener('hidden.bs.toast',ev => {
 });
 
 const create = (m,t,d) => `
-<div class="toast shadow-sm hide mb-3" data-bs-delay="${d}">
+<div class="toast shadow hide mb-3 mx-auto fade" data-bs-delay="${d}">
   <div class="toast-header border-0 pt-2 toast-header-custom">
-    <span class="d-inline-block me-auto"><span class="me-2 fontawesome d-inline-block">&#xf05a;</span>${t}</span>
+    <span class="d-inline-block me-auto"><span class="me-2 d-inline-block">📚</span>${t}</span>
     <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close" style="background-size: 45%;"></button>
   </div>
   <div class="toast-body toast-body-custom text-black">${m}</div>
 </div>
 `.trim();
 
+export function SetModelessMessagePosition(position,width = undefined)
+{
+  if(!Type.isString(position))
+    return;
+
+  let [y,x] = position.split(/\s*:\s*/,2);
+  if(y === 'top')
+  {
+    $container.style.top = ctnStyle.top;
+    $container.style.bottom = 'initial';
+  }
+  else if(y === 'bottom')
+  {
+    $container.style.top = 'initial'
+    $container.style.bottom = '0rem';
+  }
+  else
+  {
+    return false;
+  }
+  
+  if(width)
+    ctnStyle.width = $container.style.width = width;
+
+  if(x === 'left')
+  {
+    $container.style.left = ctnStyle.right;
+    $container.style.right = 'initial';
+  }
+  else if(x === 'right')
+  {
+    $container.style.left = 'initial';
+    $container.style.right = ctnStyle.right;
+  }
+  else if(x === 'center')
+  {
+    $container.style.left = `calc(50% - ${ctnStyle.width} / 2)`;
+    $container.style.right = 'initial';
+  }
+  else
+  {
+    return false;
+  }
+
+  return true;
+}
+
 export function ModelessMessage(m,t,d)
 {
   let s;
   if(Type.isPlainObject(m))
   {
-    let {title,message,delay,style} = m;
+    let {title,message,delay,style,position} = m;
 
     m = message;
     t = title;

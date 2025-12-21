@@ -1,0 +1,16 @@
+export declare function getType(o : any): string;
+export declare function isPlainObject(o : any): boolean;
+export declare function isNumber(o : any): boolean;
+export declare function isNumeric(o : any): boolean;
+export declare function isString(o : any): boolean;
+export declare function isFunction(o : any): void;
+export declare function isBoolean(o : any): boolean;
+export declare function isMap(o : any): boolean;
+export declare function isSet(o : any): boolean;
+export declare function isDate(o : any): boolean;
+export declare function isHtmlElement(o : any): boolean;
+export declare function isNodeList(o : any): boolean;
+export declare function isEventTarget(o : any): boolean;
+export declare function isArray(o : any): boolean;
+export declare function isArrowFunction(o : any): boolean;
+export declare function is(o : any, typename : string): boolean;

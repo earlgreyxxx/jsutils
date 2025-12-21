@@ -1,0 +1,2 @@
+export declare function getQueryString(q : any, delimitor : RegExp, options : any): Map<string,any>|{[key:string]: any}
+export declare function createQueryString(o : any, delimitor : any, options : any): string;

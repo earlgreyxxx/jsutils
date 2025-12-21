@@ -16,7 +16,7 @@
  *   byTag(tagname)
  *   byClass(classname)
 ******************************************************************************/
-import { isString,isHtmlElement,isNodeList,isFunction,isArrowFunction } from './type.js';
+import { isPlainObject,isString,isHtmlElement,isNodeList,isFunction,isArrowFunction } from './type.js';
 
 export const createElement = str => new DOMParser().parseFromString(str,"text/html").body.firstElementChild;
 
@@ -78,8 +78,11 @@ const _remover = (el, nm) => {
 };
 
 // alternative for jQuery .on(eventname,selector,handler) and .on(eventname,handler)
-export function on(element_or_selector,eventname,selector,handler)
+function __imp_on(options,element_or_selector,eventname,selector,handler)
 {
+  const def = {};
+  const settings = isPlainObject(options) ? Object.assign(def,options) : def;
+
   const invoker = (_,event) => isArrowFunction(handler) ? handler(_,event) : handler.call(_,event);
 
   const listener = ev => {
@@ -94,7 +97,7 @@ export function on(element_or_selector,eventname,selector,handler)
   {
     const element = element_or_selector;
     _inserter(element,eventname,eventHandler);
-    element.addEventListener(eventname,eventHandler);
+    element.addEventListener(eventname,eventHandler,settings);
   }
   else
   {
@@ -108,9 +111,20 @@ export function on(element_or_selector,eventname,selector,handler)
 
     root.forEach(el => {
       _inserter(el, eventname, eventHandler);
-      el.addEventListener(eventname,eventHandler);
+      el.addEventListener(eventname,eventHandler,settings);
     });
   }
+}
+
+// alternative for jQuery .on(eventname,selector,handler) and .on(eventname,handler)
+export function on(element_or_selector,eventname,selector,handler)
+{
+  return __imp_on(null,element_or_selector,eventname,selector,handler)
+}
+
+export function once(element_or_selector,eventname,selector,handler)
+{
+  return __imp_on({ once: true },element_or_selector,eventname,selector,handler)
 }
 
 // alternative for jQuery .off(eventname)
